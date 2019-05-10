@@ -106,6 +106,17 @@ export type LoginMutation = { __typename?: "Mutation" } & {
   >;
 };
 
+export type RegisterMutationVariables = {
+  input: RegisterInput;
+};
+
+export type RegisterMutation = { __typename?: "Mutation" } & {
+  register: { __typename?: "User" } & Pick<
+    User,
+    "id" | "firstName" | "lastName" | "email" | "name"
+  >;
+};
+
 import gql from "graphql-tag";
 import * as React from "react";
 import * as ReactApollo from "react-apollo";
@@ -161,6 +172,59 @@ export function withLogin<TProps, TChildProps = {}>(
     LoginProps<TChildProps>
   >(LoginDocument, {
     alias: "withLogin",
+    ...operationOptions
+  });
+}
+export const RegisterDocument = gql`
+  mutation Register($input: RegisterInput!) {
+    register(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      name
+    }
+  }
+`;
+export type RegisterMutationFn = ReactApollo.MutationFn<
+  RegisterMutation,
+  RegisterMutationVariables
+>;
+
+export const RegisterComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<RegisterMutation, RegisterMutationVariables>,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: RegisterMutationVariables }
+) => (
+  <ReactApollo.Mutation<RegisterMutation, RegisterMutationVariables>
+    mutation={RegisterDocument}
+    {...props}
+  />
+);
+
+export type RegisterProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<RegisterMutation, RegisterMutationVariables>
+> &
+  TChildProps;
+export function withRegister<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    RegisterMutation,
+    RegisterMutationVariables,
+    RegisterProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    RegisterMutation,
+    RegisterMutationVariables,
+    RegisterProps<TChildProps>
+  >(RegisterDocument, {
+    alias: "withRegister",
     ...operationOptions
   });
 }
