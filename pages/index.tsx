@@ -3,6 +3,7 @@ import Link from "next/link";
 import Layout from "../components/Layout";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import { LoginComponent } from "../generated/apolloComponents";
 
 const IndexPage: React.FunctionComponent = () => {
   return (
@@ -13,27 +14,26 @@ const IndexPage: React.FunctionComponent = () => {
           <a>About</a>
         </Link>
       </p>
-      <Mutation
-        mutation={gql`
-          mutation {
-            login(input: { email: "mauro@md.com", password: "password" }) {
-              id
-              email
-            }
-          }
-        `}
-      >
+      <LoginComponent>
         {mutate => (
           <button
             onClick={async () => {
-              const response = await mutate();
+              const response = await mutate({
+                variables: {
+                  email: "mauro@md.com",
+                  password: "password"
+                }
+              });
+              if (response && response.data) {
+                console.log(response.data);
+              }
               console.log(response);
             }}
           >
             call login mutation
           </button>
         )}
-      </Mutation>
+      </LoginComponent>
     </Layout>
   );
 };
